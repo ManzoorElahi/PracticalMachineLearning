@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://127.0.0.1:4792/Readme.Rmd -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script async="" src="./Readme_files/highlight.js"></script>
+  
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">json2[2014.02.04];jquery[1.11.0];shiny[0.10.2.2]</script>
+<script src="./Readme_files/json2-min.js"></script>
+<script src="./Readme_files/jquery.js"></script>
+<link href="http://127.0.0.1:4792/shared/shiny.css" rel="stylesheet">
+<script src="./Readme_files/shiny.js"></script>
+  <script src="./Readme_files/rmd_loader.js"></script>
+  <link href="http://127.0.0.1:4792/rmd_resources/rmd_loader.css" rel="stylesheet">
+<script src="./Readme_files/rsiframe.js"></script><meta name="0" content="[object Object]"><link rel="stylesheet" type="text/css" href="./Readme_files/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="./Readme_files/bootstrap-responsive.min.css"><script src="./Readme_files/bootstrap.min.js"></script><link rel="stylesheet" type="text/css" href="./Readme_files/rmd_perf.css"><script src="./Readme_files/rmd_perf.js"></script>
+
+<meta charset="utf-8">
+
+<meta name="generator" content="pandoc">
+
+<meta name="author" content="Manzoor Elahi">
+
+
+<title>Practical Machine Learning</title>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="./Readme_files/default.css" type="text/css">
+<script src="./Readme_files/highlight(1).js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<script type="text/javascript" src="file:///C:/UsersElahiAppDataLocalTempRtmpkl7Jsy%0Cile56820945db0_files/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script></head>
+<body>
+<div>
+  <div data-display-if="!output.__reactivedoc__" style="display: none;">
+    <div id="rmd_loader_wrapper">
+      <div id="rmd_loader" style="">
+        <img src="./Readme_files/rmd_loader.gif">
+        <p>Loading</p>
+      </div>
+    </div>
+  </div>
+  <div id="__reactivedoc__" class="shiny-html-output shiny-bound-output">
+
+
+
+
+
+
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Practical Machine Learning</h1>
+<h4 class="author"><em>Manzoor Elahi</em></h4>
+<h4 class="date"><em>Monday, December 22, 2014</em></h4>
+</div>
+
+
+<p>The input data consisted of various movement measurments including acceleration components of the arms and pitch and roll orientations of the dumbell.</p>
+<p>The original data was taken from the originating study linked below. Please see the site and associated paper for more information.</p>
+<p><a href="http://groupware.les.inf.puc-rio.br/harp">http://groupware.les.inf.puc-rio.br/harp</a></p>
+<p>The caret package is used, which provides an interface into a variety of machine learning methods.</p>
+<div id="code" class="section level2">
+<h2>Code</h2>
+<pre class="r"><code>library(caret)
+library(knitr)
+
+training &lt;- read.csv("pml-training.csv")
+testing &lt;- read.csv("pml-testing.csv")
+set.seed(19)
+# Coloumns with incomplete data is removed from the training set
+na_test = sapply(training, function(x) {sum(is.na(x))})
+bad_columns = names(na_test[na_test==19216])
+training = training[, !names(training) %in% bad_columns]
+# In the below method, cross validation has been performed by 
+# dividing the traing data into two folds.
+cvCtrl &lt;- trainControl(method = "cv", number = 2, allowParallel = FALSE, verboseIter = TRUE)
+m1 = train(classe ~., method="rf", data=training, trControl = cvCtrl)
+
+pred1 &lt;- predict(m1,newdata=testing)
+
+pred1
+
+answers &lt;- pred1
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(answers)</code></pre>
+</div>
+<div id="the-final-prediction-is" class="section level2">
+<h2>The final prediction is :</h2>
+<pre><code>B,A,B,A,A,E,D,B,A,A,B,C,B,A,E,E,A,B,B,B</code></pre>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "C:\Users\Elahi\AppData\Local\Temp\Rtmpkl7Jsy\file56820945db0_files/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+</div>
+</div>
+
+</body></html>
